@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa Uwalniania — Hawkins</title>
+<style>
+:root {
+  --bg: #0f0e0c;
+  --sur: #1a1916;
+  --sur2: #222220;
+  --brd: rgba(255,255,255,0.08);
+  --txt: #e8e4dc;
+  --tx2: #a09890;
+  --tx3: #6a6460;
+  --gld: #c9a96e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:15px;line-height:1.6}
+.hdr{padding:2.5rem 1.25rem 1.5rem;text-align:center;border-bottom:0.5px solid var(--brd)}
+.eye{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gld);margin-bottom:.75rem}
+.hdr h1{font-size:28px;font-weight:300;line-height:1.2;margin-bottom:.5rem}
+.hdr p{font-size:13px;color:var(--tx2)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--brd);border-bottom:.5px solid var(--brd)}
+.st{background:var(--bg);padding:.875rem 0;text-align:center}
+.sn{display:block;font-size:22px;font-weight:300;color:var(--gld)}
+.sl{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3);margin-top:2px}
+.tabs{display:flex;border-bottom:.5px solid var(--brd);background:var(--bg);position:sticky;top:0;z-index:50}
+.tb{flex:1;padding:.75rem 0;font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--tx3);cursor:pointer;font-family:inherit;margin-bottom:-.5px}
+.tb.on{color:var(--gld);border-bottom-color:var(--gld)}
+.pane{display:none;padding:1.25rem;max-width:640px;margin:0 auto}
+.pane.on{display:block}
+.card{background:var(--sur);border:.5px solid var(--brd);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.ch{padding:1rem;cursor:pointer;display:flex;align-items:center;justify-content:space-between;-webkit-tap-highlight-color:transparent;user-select:none}
+.cl{display:flex;align-items:center;gap:12px}
+.cn{font-size:26px;font-weight:300;min-width:44px;line-height:1}
+.nm{font-size:14px;font-weight:500}
+.sb{font-size:12px;color:var(--tx3);font-style:italic;margin-top:2px}
+.cr{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.dm{font-size:13px;color:var(--gld)}
+.ar{font-size:20px;color:var(--tx3);transition:transform .2s;display:inline-block;line-height:1}
+.ar.op{transform:rotate(180deg)}
+.bar{height:1px;background:var(--brd)}
+.bf{height:100%;transition:width .3s}
+.bd{display:none;padding:0 1rem 1.25rem}
+.bd.op{display:block}
+.sc{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--gld);margin:1.125rem 0 .5rem}
+.gl{font-size:13px;font-weight:500;color:var(--txt);padding-bottom:.625rem}
+.dc{background:var(--sur2);border-radius:8px;padding:.75rem;font-size:13px;color:var(--tx2);line-height:1.7;border-left:2px solid}
+.xl{list-style:none}
+.xl li{font-size:13px;color:var(--tx2);padding:.45rem 0;border-bottom:.5px solid var(--brd);line-height:1.55;display:flex;gap:8px}
+.xl li:last-child{border:none}
+.xl li::before{content:"→";color:var(--tx3);flex-shrink:0}
+.ps{border:.5px solid var(--brd);border-radius:8px;padding:.75rem;margin-bottom:7px;background:var(--sur2)}
+.pn{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:3px}
+.pt{font-size:13px;font-weight:500;color:var(--txt);margin-bottom:4px}
+.pd{font-size:13px;color:var(--tx2);line-height:1.6}
+.rod{background:rgba(201,169,110,.06);border:.5px solid rgba(201,169,110,.18);border-radius:8px;padding:.75rem;font-size:13px;color:var(--tx2);line-height:1.7}
+.af{font-size:15px;font-style:italic;color:var(--txt);line-height:1.6;padding:.625rem 0 .625rem .875rem;border-left:1px solid var(--gld)}
+.jq{font-size:12px;color:var(--tx3);font-style:italic;margin-bottom:7px;line-height:1.5}
+textarea{width:100%;min-height:75px;padding:.625rem;font-size:13px;font-family:inherit;color:var(--txt);background:var(--sur2);border:.5px solid rgba(255,255,255,.12);border-radius:8px;resize:vertical;line-height:1.6}
+textarea:focus{outline:none;border-color:rgba(201,169,110,.5)}
+textarea::placeholder{color:var(--tx3)}
+.btn{width:100%;margin-top:.75rem;padding:.7rem;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-family:inherit;background:transparent;color:var(--tx2);border:.5px solid rgba(255,255,255,.12);border-radius:8px;cursor:pointer}
+.btn.dn{border-color:rgba(201,169,110,.4);color:var(--gld);background:rgba(201,169,110,.06)}
+.ht{font-size:11px;color:var(--tx3);text-align:center;margin-top:7px}
+.cbox{background:rgba(201,169,110,.07);border:.5px solid rgba(201,169,110,.25);border-radius:12px;padding:2rem 1.25rem;text-align:center;margin-top:.75rem}
+.cn2{font-size:64px;font-weight:300;color:var(--gld);line-height:1;margin:.5rem 0}
+.ct{font-size:18px;font-weight:300}
+.cd{font-size:13px;color:var(--tx2);line-height:1.7;margin-top:.75rem}
+.jc{background:var(--sur);border:.5px solid var(--brd);border-radius:10px;padding:.875rem 1rem;margin-bottom:9px}
+.jch{font-size:13px;font-weight:500;margin-bottom:4px}
+.jcq{font-size:12px;color:var(--tx3);font-style:italic;margin-bottom:6px}
+.jct{font-size:13px;color:var(--tx2);line-height:1.6}
+.emp{font-size:13px;color:var(--tx3);text-align:center;padding:3rem 0;font-style:italic;line-height:1.7}
+.mr{display:flex;align-items:baseline;gap:12px;font-size:13px;padding:6px 0;border-bottom:.5px solid var(--brd);color:var(--tx2)}
+.mr:last-child{border:none}
+.mn{font-size:17px;font-weight:300;min-width:40px}
+.pc{background:var(--sur);border:.5px solid var(--brd);border-radius:12px;padding:1rem;margin-bottom:10px}
+.ft{font-size:12px;color:var(--tx3);text-align:center;padding:1.5rem 0;line-height:1.7}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="eye">Program terapeutyczny</div>
+  <h1>Mapa Uwalniania<br>Davida Hawkinsa</h1>
+  <p>Od wstydu (20) do odwagi (200)</p>
+</div>
+
+<div class="stats">
+  <div class="st"><span class="sn" id="s1">0</span><span class="sl">ukończone</span></div>
+  <div class="st"><span class="sn">8</span><span class="sl">poziomów</span></div>
+  <div class="st"><span class="sn" id="s2">0</span><span class="sl">zapisów</span></div>
+  <div class="st"><span class="sn" id="s3">—</span><span class="sl">dni pracy</span></div>
+</div>
+
+<div class="tabs">
+  <button class="tb on" id="t1" onclick="showTab('program')">Program</button>
+  <button class="tb" id="t2" onclick="showTab('journal')">Dziennik</button>
+  <button class="tb" id="t3" onclick="showTab('phil')">Filozofia</button>
+</div>
+
+<div class="pane on" id="p-program">
+  <div id="lw"></div>
+  <div id="cb" style="display:none" class="cbox">
+    <div class="ct">Brama Przełomu</div>
+    <div class="cn2">200</div>
+    <div class="cd">Odwaga — energia z ujemnej staje się dodatnia. Przestajesz być ofiarą emocji, stajesz się obserwatorem gotowym do wzięcia pełnej odpowiedzialności za swoje życie.</div>
+  </div>
+  <p class="ft">Hawkins: emocje nie są Tobą — są nagromadzoną energią.<br>Zauważ → nazwij → pozwól być → zrelaksuj się.</p>
+</div>
+
+<div class="pane" id="p-journal">
+  <p style="font-size:13px;color:var(--tx2);margin-bottom:1rem;line-height:1.6">Tutaj zebrane są wszystkie Twoje refleksje z poszczególnych poziomów.</p>
+  <div id="jw"></div>
+</div>
+
+<div class="pane" id="p-phil">
+  <div class="pc">
+    <div class="sc">Trzy kroki uwalniania</div>
+    <div class="ps"><div class="pn">Krok 1</div><div class="pt">Zauważ i nazwij</div><div class="pd">Poczuj daną emocję bez oceniania jej jako złej. Samo nazwanie emocji redukuje jej intensywność.</div></div>
+    <div class="ps"><div class="pn">Krok 2</div><div class="pt">Pozwól jej być</div><div class="pd">Nie walcz z nią, nie uciekaj w działanie. Opór wzmacnia emocję — akceptacja ją rozpuszcza.</div></div>
+    <div class="ps"><div class="pn">Krok 3</div><div class="pt">Zrelaksuj się w niej</div><div class="pd">Odpuść chęć zmiany tego stanu. Gdy przestaniesz stawiać opór, energia emocji zacznie wygasać.</div></div>
+  </div>
+  <div class="pc">
+    <div class="sc">Praca z rodem</div>
+    <p style="font-size:13px;color:var(--tx2);line-height:1.7">Wiele emocji to nie Twoje emocje — to wzorce przekazane przez ród. Wstyd rodziców, lęk dziadków, wina pradziadków. Pracując z emocją pytaj: <em>Czy to jest moje, czy przejęte?</em> Uwalniając emocję w sobie, uwalniasz ją dla całej linii.</p>
+  </div>
+  <div class="pc">
+    <div class="sc">Mapa poziomów energii</div>
+    <div class="mr"><span class="mn" style="color:#c47a7a">20</span>Wstyd — destrukcja tożsamości</div>
+    <div class="mr"><span class="mn" style="color:#c4906a">30</span>Wina — potrzeba kary, autoagresja</div>
+    <div class="mr"><span class="mn" style="color:#8a8a9e">50</span>Apatia — bezsilność, zamrożona energia</div>
+    <div class="mr"><span class="mn" style="color:#7a90a8">75</span>Żal / Smutek — życie przeszłością</div>
+    <div class="mr"><span class="mn" style="color:#7aaa9a">100</span>Strach — paranoja, potrzeba kontroli</div>
+    <div class="mr"><span class="mn" style="color:#aaa060">125</span>Pożądanie — nienasycenie, uzależnienia</div>
+    <div class="mr"><span class="mn" style="color:#c47850">150</span>Złość — frustracja, destrukcyjna siła</div>
+    <div class="mr"><span class="mn" style="color:#9080c0">175</span>Duma — iluzoryczne ego</div>
+    <div class="mr"><span class="mn" style="color:#c9a96e;font-weight:500">200</span><strong style="color:#c9a96e">Odwaga — brama przełomu</strong></div>
+  </div>
+</div>
+
+<script>
+var D=[
+{num:20,name:"Wstyd",sub:"Jestem pomylka",color:"#c47a7a",goal:"Przejście od autoagresji do samowspółczucia",desc:"To najniższa wibracja na mapie. Wstyd uderza bezpośrednio w Twoją tożsamość — nie mówi zrobiłem coś źle, ale coś jest ze mną fundamentalnie nie tak. Towarzyszy mu chęć stania się niewidzialnym, paraliżujący lęk przed oceną i odrzuceniem.",ex:["Wchodzisz na spotkanie i masz wrażenie, że wszyscy Cię krytycznie oceniają — chcesz natychmiast wyjść.","Ktoś zwraca Ci uwagę, a Ty myślisz: Znowu wszystko zepsułem, jestem nikim.","Ukrywasz swoje prawdziwe poglądy lub pasje z lęku przed wyśmianiem."],pr:[{t:"Radykalna akceptacja cienia",d:"Wypisz sytuacje lub cechy, których najbardziej się wstydzisz. Powiedz sobie: Wtedy działałem z takiego poziomu świadomości, jaki miałem. Wybaczam sobie."},{t:"Rozdzielenie tożsamości",d:"Zmień narrację z Jestem beznadziejny na Czuję teraz potężne poczucie wstydu, ale to tylko chmura na moim niebie. Ja — obserwator — jestem poza nią."},{t:"Praca z rodem",d:"Zapytaj: Czy ten wstyd jest mój, czy przejąłem go od rodzica lub dziadka? Powiedz: Zwracam ten wstyd rodowi i uwalniam go dla nas wszystkich."}],rod:"Wstyd bardzo często pochodzi z rodu. Rodzic, który nie był akceptowany, przekazał wzorzec: bój się oceny, chowaj się. Usiądź wygodnie, zamknij oczy. Wyobraź sobie swoją matkę, potem jej matkę, potem praprababkę. Zapytaj ich: Czy nosiłyście ten wstyd? Poczuj, że wstyd jest starszy niż Ty. I powiedz: Uwalniam ten wstyd z naszej linii. Czynię to dla nas wszystkich.",afm:"Nie jestem moją historią. Nie jestem swoimi błędami. Jestem świadomością, która je obserwuje — i wybieram teraz siebie.",jq:"Kiedy po raz pierwszy poczułem głęboki wstyd? Skąd mógł pochodzić ten wzorzec?"},
+{num:30,name:"Wina",sub:"Zrobiłem coś niewybaczalnego",color:"#c4906a",goal:"Przekształcenie autoagresji w samoprzebaczenie",desc:"Wina koncentruje się na działaniu i domaga się kary. To stan nieustannego biczowania się za przeszłość. Prowadzi do sabotowania własnego sukcesu, bo na niego nie zasługuję. Osoby na tym poziomie są podatne na manipulację przez tych, którzy wzbudzają wyrzuty sumienia.",ex:["Odmówiłeś znajomemu przysługi z powodu zmęczenia i przez trzy dni nie możesz spać z wyrzutami sumienia.","Gdy zaczyna Ci się dobrze powodzić, podświadomie sabotaż ten stan — prowokujesz kłótnie lub wydajesz bezsensownie pieniądze.","Ciągłe powinienem był — żyjesz w pętli przeszłości."],pr:[{t:"List do siebie z przeszłości",d:"Napisz list do tamtej wersji siebie. Napisz: Wtedy robiłeś co mogłeś z tym, co wiedziałeś i czym byłeś. Przeczytaj go głośno."},{t:"Technika Ho'oponopono",d:"Kierując myśl do osoby, wobec której czujesz winę, powtarzaj: Przepraszam. Wybacz mi. Kocham cię. Dziękuję. Chodzi o wewnętrzne oczyszczenie."},{t:"Wyrzuty vs. odpowiedzialność",d:"Wyrzuty biczują — odpowiedzialność naprawia. Zapytaj: Czy mogę realnie coś zrobić, by naprawić tę sytuację? Jeśli tak — zrób. Jeśli nie — odpuść."}],rod:"Poczucie winy często pochodzi od religijnego lub rygorystycznego przodka, który uczył: nie masz prawa do radości, dopóki nie odpokutujesz. Powiedz im: Widzę, że nosiłyście ogromny ciężar winy. Dziękuję za troskę. Ale teraz wybieram uwolnienie tej linii od samoukarania.",afm:"Robiłem to, co potrafiłem z tamtym poziomem świadomości. Dziś wybieram inaczej. Wybaczam sobie.",jq:"Za co najbardziej karuję siebie? Gdybym zobaczył przyjaciela w tej samej sytuacji — co bym mu powiedział?"},
+{num:50,name:"Apatia",sub:"I tak nic z tego nie będzie",color:"#8a8a9e",goal:"Uruchomienie zamrożonej energii w ciele",desc:"Stan całkowitej bezsilności, beznadziei i braku energii. Świat wydaje się szary, przyszłość pusta. Dominujące przekonanie: Próbowałem już wszystkiego, nic mi nie pomoże. Stan zbliżony do klinicznej depresji — energia jest dosłownie zablokowana w ciele.",ex:["Siedzisz godzinami patrząc w sufit lub bezmyślnie przewijając telefon, wiedząc że powinieneś coś zrobić.","Tkwisz w toksycznej pracy lub relacji, ale na pytanie dlaczego nic nie zrobisz — wzruszasz ramionami.","Plany i marzenia wydają się z innego życia — jakby dotyczyły kogoś innego."],pr:[{t:"Mikro-działania",d:"Twoim jedynym celem jest zrobienie jednej, banalnej rzeczy: umyj jedną szklankę, wyciągnij rękę spod kołdry, otwórz okno. Przełamujesz tym iluzję całkowitego paraliżu."},{t:"Ożywienie przez ciało",d:"Połóż się na podłodze. Zacznij powoli ruszać palcami rąk i nóg. Następnie dłońmi. Powoli wstań. Ciało w ruchu wysyła sygnał do mózgu: żyję, mogę działać."},{t:"Pytanie aktywizujące",d:"Zamiast pytać dlaczego mi nie wychodzi, zapytaj: Jaki jeden mały krok, choćby śmiesznie mały, mógłbym zrobić TERAZ? Apatia żywi się ogromem — mikro-krok ją rozbija."}],rod:"Apatia często pochodzi od przodka, który przeżył wielką stratę i wyłączył się, by przetrwać. Ten wzorzec wyłączania się mógł być przekazany jako strategia przeżycia. Powiedz temu przodkowi: Widzę Twoją strategię przetrwania. Dziękuję, że przeżyłeś — dzięki Tobie ja istnieję. Ale ja już jestem bezpieczny. Nie muszę się wyłączać.",afm:"Nawet jeśli nie czuję teraz energii — jestem żywy. Moje ciało oddycha. To wystarczy, by zacząć.",jq:"Kiedy po raz pierwszy poczułem, że nie ma sensu próbować? Kto w moim rodzie mógł nosić to poczucie bezsilności?"},
+{num:75,name:"Żal i Smutek",sub:"Gdybym tylko wtedy...",color:"#7a90a8",goal:"Domknięcie procesów żałoby i uwolnienie się od przeszłości",desc:"Poziom melancholii, straty i tęsknoty. Więcej energii niż apatia — energia płaczu i ubolewania. Człowiek żyje przeszłością, idealizuje to co utracił i uważa, że najlepsze ma nieodwracalnie za sobą.",ex:["Mijają lata od rozstania, a Ty codziennie przeglądasz zdjęcia byłej osoby, myśląc że już nikogo tak nie pokochasz.","Rozpamiętywanie decyzji sprzed lat: Gdybym wtedy nie przeprowadził się, nie zmienił pracy...","Każdy sukces jest przyćmiony przez jeden wielki żal z przeszłości."],pr:[{t:"Uwolnienie łez",d:"Pozwól sobie na płacz bez hamulców. Ustaw timer na 20 minut. Pozwól łzom płynąć — nie uciekaj w ekrany ani używki. Płacz to uwalnianie, nie słabość."},{t:"Rytuał pożegnania",d:"Napisz list do tego, co straciłeś — osoby, możliwości, siebie sprzed lat. Zakończ: Żegnam Cię z miłością. Wnoszę to, co było piękne, i puszczam resztę."},{t:"Praca z idealizacją",d:"Zapytaj: Czy idealizuję przeszłość? Jakie trudności WTEDY pomijam? Żal karmi się wybiórczą pamięcią — pełny obraz uwalnia."}],rod:"Żal rodowy to wielkie straty: emigracja, śmierć dzieci, zniszczone domy. Przodkowie często nie mieli przestrzeni na opłakiwanie. Ten nieopłakany żal mógł spaść na Ciebie. Powiedz: Płaczę za Ciebie i razem z Tobą. Pozwalam nam obojgu poczuć tę stratę. I teraz — razem — ją puszczamy.",afm:"To, co straciłem, było prawdziwe i piękne. Pozwalam sobie to opłakać. I pozwalam sobie też żyć dalej.",jq:"Co lub kogo wciąż opłakuję? Czy pozwoliłem sobie w pełni to poczuć, czy uciekałem?"},
+{num:100,name:"Strach",sub:"Świat jest niebezpieczny",color:"#7aaa9a",goal:"Zredukowanie lęku przed samym lękiem i puszczenie kontroli",desc:"Strach jest wszechobecny i napędza ego. To ciągłe skanowanie otoczenia w poszukiwaniu zagrożeń, paranoja, lęk przed chorobą, starością, utratą kontroli. Strach ogranicza rozwój — zamiast żyć, skupiasz się na tym, jak przetrwać.",ex:["Czujesz ukłucie w boku i spędzasz 3 godziny czytając o najgorszych chorobach — przekonany, że to Twój koniec.","Chcesz założyć firmę, ale paraliżuje Cię wizja porażki — zostajesz na nielubianym etacie.","Dzwonisz do partnera lub dziecka co 30 minut gdy wychodzą, bo w głowie masz obrazy wypadków."],pr:[{t:"Oddech 4-7-8",d:"Gdy czujesz lęk, usiądź prosto. Wdech 4 sekundy, zatrzymanie 7, wydech 8. Witaj skurcz w ciele zamiast z nim walczyć. Powtarzaj: W tej sekundzie jestem bezpieczny."},{t:"Co najgorszego może się stać",d:"Przejdź mentalnie do końca czarnego scenariusza. Wyobraź sobie, że najgorsze się stało. Zapytaj: I co dalej? Jak bym sobie poradził? Twoja świadomość przetrwa nawet najgorsze."},{t:"Kontrola vs. wpływ",d:"Zrób listę dwóch kolumn: Mam wpływ i Nie mam wpływu. Energia lęku idzie głównie w drugą kolumnę. Ćwicz przenosić uwagę na pierwszą."}],rod:"Strach rodowy to wzorzec z czasów wojen, prześladowań, głodu. Zawsze bądź gotowy na najgorsze — ta strategia uratowała życie przodków. Powiedz: Widzę Twój strach. Dziękuję, że chroniłeś rodzinę. Ja już jestem bezpieczny — mogę złożyć ten strach.",afm:"Strach jest sygnałem, nie komendą. Czuję go, ale nie muszę go słuchać. W tej chwili jestem bezpieczny.",jq:"Czego najbardziej się boję? Czy ten lęk jest mój, czy przejąłem go od kogoś z rodziny?"},
+{num:125,name:"Pożądanie",sub:"Muszę to mieć, żeby być kimś",color:"#aaa060",goal:"Przekierowanie z zewnętrznych substytutów na wewnętrzne zasoby",desc:"Hawkins mówi tu o kompulsywnym pragnieniu i nienasyceniu — nie o zdrowej motywacji. Poziom uzależnień od substancji, zakupów, seksu, aprobaty. Człowiek żyje w iluzji, że szczęście jest na zewnątrz i zależy od kolejnego bodźca.",ex:["Kupujesz nowy telefon. Przez dwa tygodnie ekscytacja — potem planujesz kolejny zakup, zadłużając się.","Kompulsywne randkowanie: potrzebujesz ciągłego potwierdzenia, że jesteś atrakcyjny. Stabilna relacja Cię nudzi.","Sprawdzasz social media co kilka minut w poszukiwaniu lajków — bez nich czujesz niepokój."],pr:[{t:"Post i detoks",d:"Świadome rezygnowanie z natychmiastowej gratyfikacji: 24h bez social media, tydzień bez zakupów impulsywnych. Obserwuj co czujesz, gdy nie dostajesz kolejnej dawki."},{t:"Trening wdzięczności",d:"Przez 21 dni, każdego ranka, zapisz 5 konkretnych rzeczy za które jesteś wdzięczny. Ciepła herbata dziś rano jest lepsza niż ogólne jestem wdzięczny za zdrowie."},{t:"Pytanie o pustkę",d:"Co naprawdę chcę poczuć, gdy to zdobędę? Czy jest sposób, by poczuć to TERAZ, bez tego przedmiotu lub osoby? Pożądanie zawsze przykrywa głębszą potrzebę."}],rod:"Pożądanie często pochodzi od przodka, który przeżył biedę lub brak i nauczył się: nigdy nie będzie dosyć, gromadź. Powiedz: Rozumiem Twój głód. Przeżyłeś biedę. Ale mnie już nie grozi głód. Mogę zrezygnować z nienasycenia.",afm:"To, czego szukam na zewnątrz, istnieje we mnie. Jestem wystarczający już teraz, w tej chwili.",jq:"Czego naprawdę szukam w rzeczach lub uwadze lub statusie? Jaka głęboka potrzeba jest pod tym pragnieniem?"},
+{num:150,name:"Złość",sub:"Wszyscy mnie wkurzają",color:"#c47850",goal:"Transformacja destrukcyjnej agresji w konstruktywną siłę",desc:"Złość pojawia się gdy nasze oczekiwania zostają zablokowane. Drażliwość, wybuchowość, uraza i chęć odwetu. Co ważne — złość ma wyższą energię niż strach czy apatia. To tutaj człowiek zyskuje siłę, by powiedzieć dość.",ex:["Ktoś zajedzie Ci drogę, a Ty trąbisz, klniesz i masz ochotę wysiąść z auta.","Szef skrytykował Twój projekt, wracasz do domu i robisz awanturę partnerowi o niepozmywane naczynia.","Siedzisz ze złością na kogoś miesiącami, czekając na przeprosiny, których nie ma."],pr:[{t:"Bezpieczne wyładowanie",d:"Złość potrzebuje ruchu. Wykrzycz się w poduszkę, idź pobiegać, rwij gazety, bij poduszkę. Nie przelewaj jej na ludzi — ale też nie tłum jej w sobie."},{t:"Zrozumienie źródła",d:"Jakie moje oczekiwanie zostało zawiedzione? Złość to często maska dla bezbronności lub strachu. Pod każdą złością jest zranione chciałem lub bałem się, że..."},{t:"List który nie zostanie wysłany",d:"Napisz list do osoby, na którą jesteś zły. Napisz wszystko bez cenzury. Potem go NIE WYSYŁAJ. Przeczytaj raz i zniszcz. Chodzi o wyładowanie, nie o komunikację."}],rod:"Złość rodowa to często przemoc, niesprawiedliwość, bezsilność przodków — którzy nie mogli wyrazić złości bezpiecznie. Ta stłumiona złość mogła trafić do Ciebie jako chroniczny gniew. Powiedz: Widzę Twoją stłumioną złość. Nie miałeś prawa jej wyrazić. Wyrażam ją teraz za nas oboje — bezpiecznie, z szacunkiem.",afm:"Moja złość pokazuje mi co jest dla mnie ważne. Szanuję ten sygnał. Wybieram, jak na niego odpowiem.",jq:"Na kogo lub co jestem naprawdę zły? Jaki ból lub strach jest pod tą złością?"},
+{num:175,name:"Duma",sub:"Moje jest mojsze i lepsze",color:"#9080c0",goal:"Wyjście z polaryzacji lepszy/gorszy w stronę autentyczności",desc:"Duma plasuje się najwyżej z negatywnych poziomów i często mylona jest z prawdziwym poczuciem własnej wartości. Opiera się jednak na porównywaniu się z innymi i poczuciu wyższości. Jest krucha — jedno potknięcie i duma wpada w głęboki wstyd.",ex:["W dyskusji nie słuchasz argumentów — Twoim celem jest zmiażdżenie rozmówcy i pokazanie jego głupoty.","Czujesz satysfakcję, gdy widzisz, że znajomemu ze szkoły nie wyszło — na jego tle wyglądasz lepiej.","Nie potrafisz przeprosić partnera po kłótni, mimo że wiesz że zawiniłeś. Czekasz, aż to oni przyjdą."],pr:[{t:"Trening pokory",d:"Świadomie przyznaj się do błędu przed kimś. Powiedz: Nie wiem, Myliłem się. Zaobserwuj jak ego reaguje — napięcie, opór, skurcz. Pozwól temu odpłynąć."},{t:"Rezygnacja z racji",d:"W trakcie następnej dyskusji odpuść potrzebę udowodnienia, że masz rację. Gdy poczujesz impuls by kontrować — zatrzymaj się. Zapytaj: Czy chcę mieć rację, czy chcę zrozumieć?"},{t:"Lustro dumy",d:"Gdzie w moim życiu porównuję się z innymi i szukam poczucia wyższości? Duma zbudowana jest na strachu przed byciem niewystarczającym. Zajrzyj pod dumę — zobaczysz tam wstyd."}],rod:"Duma rodowa to często przodek upokorzony przez los — bieda, brak wykształcenia — który reagował nadmierną dumą jako ochroną przed wstydem. Powiedz: Rozumiem Twoją dumę. Chroniła Cię przed wstydem upokorzenia. Widzę Cię. Nie musisz już walczyć.",afm:"Nie potrzebuję być lepszy od innych, by być wartościowy. Moja wartość nie pochodzi z porównań.",jq:"Gdzie porównuję się z innymi? Co chcę udowodnić? Jaki wstyd lub lęk kryje się pod moją potrzebą bycia lepszym?"}
+];
+
+var ST={done:{},jrnl:{},start:null,open:null};
+try{var r=localStorage.getItem('hk5');if(r)ST=JSON.parse(r);}catch(e){}
+
+function sv(){try{localStorage.setItem('hk5',JSON.stringify(ST));}catch(e){}}
+
+function showTab(id){
+  var tabs=['program','journal','phil'];
+  for(var i=0;i<tabs.length;i++){
+    document.getElementById('p-'+tabs[i]).className='pane'+(tabs[i]===id?' on':'');
+    document.getElementById('t'+(i+1)).className='tb'+(tabs[i]===id?' on':'');
+  }
+  if(id==='journal')renderJ();
+}
+
+function tog(i){
+  ST.open=(ST.open===i)?null:i;
+  sv();
+  buildLevels();
+  if(ST.open===i){
+    setTimeout(function(){
+      var el=document.getElementById('card-'+i);
+      if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});
+    },80);
+  }
+}
+
+function markDone(i){
+  if(!ST.start)ST.start=Date.now();
+  ST.done[i]=!ST.done[i];
+  sv();
+  buildLevels();
+}
+
+function saveJ(i){
+  var el=document.getElementById('ta'+i);
+  if(el){ST.jrnl[i]=el.value;sv();updStats();}
+}
+
+function updStats(){
+  var dc=0,jc=0;
+  for(var k in ST.done){if(ST.done[k])dc++;}
+  for(var k in ST.jrnl){if(ST.jrnl[k]&&ST.jrnl[k].trim())jc++;}
+  document.getElementById('s1').textContent=dc;
+  document.getElementById('s2').textContent=jc;
+  if(ST.start){
+    var d=Math.max(1,Math.ceil((Date.now()-ST.start)/86400000));
+    document.getElementById('s3').textContent=d;
+  }
+  document.getElementById('cb').style.display=(dc===8)?'block':'none';
+}
+
+function buildLevels(){
+  var h='';
+  for(var i=0;i<D.length;i++){
+    var v=D[i],dn=!!ST.done[i],op=ST.open===i,jv=ST.jrnl[i]||'';
+    h+='<div class="card" id="card-'+i+'">';
+    h+='<div class="ch" onclick="tog('+i+')">';
+    h+='<div class="cl"><div class="cn" style="color:'+v.color+'">'+v.num+'</div>';
+    h+='<div><div class="nm">'+v.name+'</div><div class="sb">'+v.sub+'</div></div></div>';
+    h+='<div class="cr">';
+    if(dn)h+='<span class="dm">&#10022;</span>';
+    h+='<span class="ar'+(op?' op':'')+'">&#8964;</span>';
+    h+='</div></div>';
+    h+='<div class="bar"><div class="bf" style="width:'+(dn?'100%':'0')+';background:'+v.color+'"></div></div>';
+    h+='<div class="bd'+(op?' op':'')+'">';
+    h+='<div class="sc">Cel terapeutyczny</div><p class="gl">'+v.goal+'</p>';
+    h+='<div class="sc">Opis emocji</div><div class="dc" style="border-color:'+v.color+'">'+v.desc+'</div>';
+    h+='<div class="sc">Przykłady z życia</div><ul class="xl">';
+    for(var j=0;j<v.ex.length;j++)h+='<li>'+v.ex[j]+'</li>';
+    h+='</ul>';
+    h+='<div class="sc">Praktyki uwalniania</div>';
+    for(var j=0;j<v.pr.length;j++){
+      h+='<div class="ps"><div class="pn">Praktyka '+(j+1)+'</div>';
+      h+='<div class="pt">'+v.pr[j].t+'</div>';
+      h+='<div class="pd">'+v.pr[j].d+'</div></div>';
+    }
+    h+='<div class="sc">Praca z rodem i przeszłością</div><div class="rod">'+v.rod+'</div>';
+    h+='<div class="sc">Afirmacja uwalniania</div><div class="af">'+v.afm+'</div>';
+    h+='<div class="sc">Pytanie do dziennika</div><p class="jq">'+v.jq+'</p>';
+    h+='<textarea id="ta'+i+'" placeholder="Napisz swoje refleksje..." onblur="saveJ('+i+')">'+jv+'</textarea>';
+    h+='<button class="btn'+(dn?' dn':'')+'" onclick="markDone('+i+')">'+(dn?'&#10022; Ukończone — kliknij by cofnąć':'Oznacz jako przepracowane')+'</button>';
+    h+='<p class="ht">Nie spiesz się — praca z jednym poziomem może zająć dni lub tygodnie.</p>';
+    h+='</div></div>';
+  }
+  document.getElementById('lw').innerHTML=h;
+  updStats();
+}
+
+function renderJ(){
+  var h='',any=false;
+  for(var i=0;i<D.length;i++){
+    var v=ST.jrnl[i];
+    if(v&&v.trim()){
+      any=true;
+      h+='<div class="jc"><div class="jch" style="color:'+D[i].color+'">'+D[i].num+' — '+D[i].name+'</div>';
+      h+='<div class="jcq">'+D[i].jq+'</div>';
+      h+='<div class="jct">'+v+'</div></div>';
+    }
+  }
+  if(!any)h='<div class="emp">Brak zapisów.<br>Otwórz dowolny poziom, wypełnij pytanie<br>i kliknij poza polem tekstowym.</div>';
+  document.getElementById('jw').innerHTML=h;
+}
+
+window.onload=function(){buildLevels();};
+</script>
+</body>
+</html>
